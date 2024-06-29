@@ -514,7 +514,7 @@ class AssistantLLM():
     
 
     # pronounce given text
-    # there now use simple "say" terminal app call on macbook assuming that the given text is on English
+    # It uses now a simple "say" terminal app call on macbook and it's assumed that the given text is on English
     # potentially i could be improved to call a separate language model with auto language determination.
     def pronounce_text(self, text_queue):
         while True:
