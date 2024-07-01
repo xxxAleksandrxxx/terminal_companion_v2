@@ -256,8 +256,8 @@ class AssistantLLM():
         print("conversation: ", "on" if self.conversation else "off")    
         print("pronunciation:", "on" if self.pronunciation else "off")    
         ###
-        print("url:", self.url)
-        print("header:", self.header)
+        print("url:          ", self.url)
+        print("header:       ", self.header)
 
 
     def print_server_model_update(self):
@@ -584,7 +584,7 @@ class AssistantLLM():
                         # print(f"message[{index}]:")
                         # print(self.messages[index])
                         # self.print_messages_pair(index)
-                        if self.del_messages_pair(index) == True:
+                        if self.del_messages_pair(index) is True:
                             print(f"\nMessage pair {index} have been deleted")
                             print("Current messages:")
                             self.print_messages()
@@ -650,7 +650,7 @@ class AssistantLLM():
                 # manage code pronunciation
                 buffer_text = chunk_text
                 if chunk_text.startswith("``"):
-                    if flag_code == True:  # it means that it's a start of the code snippet
+                    if flag_code is True:  # it means that it's a start of the code snippet
                         flag_code = False
                         # buffer_text = [" The code snippet you may find in my text response. "]
                         buffer_text = [" "]*len(chunk_text)
@@ -660,7 +660,7 @@ class AssistantLLM():
                         buffer_text = [""]
                 response.append(chunk_text)
                 print(chunk_text, end="", flush=True)
-                if flag_code == True:
+                if flag_code is True:
                     # buffer.extend(buffer_text)
                     pass
                 else:
@@ -680,11 +680,26 @@ class AssistantLLM():
         response = "".join(response)
         self.assistant_response = response
 
-###
+# ###
+        
+    # def print_stream(self, stream):
+    #     response = []
+    #     for chunk in stream:
+    #         chunk_text = chunk.choices[0].delta.content
+    #         if chunk_text:
+    #             response.append(chunk_text)
+    #             # print(chunk_text, end="", flush=True)
+    #             sys.stdout.write(chunk_text)
+    #             sys.stdout.flush()
+    #     print()
+    #     response = "".join(response)
+    #     ta.assistant_response = response
+
+
     # Depending on server, there would be different end-points to extract the content from the response
     def print_stream(self, stream):
         response = []
-        # try:
+
         if self.server == "ollama":
             for chunk in stream.iter_lines():
                 decoded_chunk = chunk.decode('utf-8')
@@ -692,30 +707,30 @@ class AssistantLLM():
                 chunk_text = chunk_data['message']['content']
                 if chunk_text:
                     response.append(chunk_text)
+                    print(chunk_text, end="", flush=True)
                 else:
                     response.append("<nothing>")
-                print(chunk_text, end="", flush=True)
             print()
             response = "".join(response)
             ta.assistant_response = response
+
         elif self.server == "openai":
             for chunk in stream.iter_lines():
-                decoded_chunk = chunk.decode('utf-8')
-                if decoded_chunk == 'data: [DONE]':
-                    break
-                chunk_data = json.loads(decoded_chunk[6:])
-                if chunk_data['choices'][0]['delta']:
-                    chunk_text = chunk_data['choices'][0]['delta']['content']
-                    if chunk_text:
+                if chunk:
+                    decoded_chunk = chunk.decode("utf-8")
+                    if decoded_chunk == "data: [DONE]":
+                        break
+                    elif '"delta":{"role":"assistant"' in decoded_chunk:
+                        continue
+                    chunk_data = json.loads(decoded_chunk[6:])
+                    if chunk_data["choices"][0]["delta"]:
+                        chunk_text = chunk_data["choices"][0]["delta"]["content"]
+                        print(chunk_text, end="", flush=True)
                         response.append(chunk_text)
-                    else:
-                        response.append("<nothing>")
-                    print(chunk_text, end="", flush=True)
-            print()
-            response = "".join(response)
-            ta.assistant_response = response
+
         elif self.set_server == "anthropic":
-            for chunk in stream:
+            for chunk in stream.iter_lines():
+
                 chunk_text = chunk.choices[0].delta.content
                 if chunk_text:
                     response.append(chunk_text)
@@ -769,7 +784,7 @@ if __name__ == "__main__":
         ta.set_header() # initialise header
         ta.set_data()   # initialise data
         # print("ta.messages\n", ta.messages, "\n")                   # for debugging
-        stream = requests.post(ta.url, data=json.dumps(ta.data), headers=ta.header, stream=False)
+        # stream = requests.post(ta.url, data=json.dumps(ta.data), headers=ta.header, stream=False)
         # print("stream.status_code:", stream.status_code, "\n")      # for debugging
         # print("stream.request.body\n", stream.request.body, "\n")   # for debugging
         # print("stream.text\n", stream.text, "\n")                   # for debugging
@@ -788,6 +803,7 @@ if __name__ == "__main__":
         
             # here we communicate to API
             stream = requests.post(ta.url, data=json.dumps(ta.data), headers=ta.header, stream=True)
+            # stream = requests.post(ta.url, data=json.dumps(ta.data), headers=ta.header, stream=False)
 
             # stop spinner after receiving answer from ollama or ChatGPT 
             stop_event.set()
@@ -795,10 +811,8 @@ if __name__ == "__main__":
 
 ###
             if stream.status_code == 200:
-                print(stream.text)
-
-
-                # ta.print_stream(stream)  # print response from the API
+                # print(stream.text)
+                ta.print_stream(stream)  # print response from the API
             else:
                 print(json.dumps(json.loads(stream.text), indent=4))
                     # #### print and say or just print the response
