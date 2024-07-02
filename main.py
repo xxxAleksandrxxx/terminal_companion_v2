@@ -253,8 +253,8 @@ class AssistantLLM():
         print("conversation: ", "on" if self.conversation else "off")    
         print("pronunciation:", "on" if self.pronunciation else "off")    
         ###
-        print("url:          ", self.url)
-        print("header:       ", self.header)
+        # print("url:          ", self.url)
+        # print("header:       ", self.header)
 
 
     def print_server_model_update(self):
@@ -274,11 +274,8 @@ class AssistantLLM():
 
 
     def print_messages(self):
-        print("system")
-        print(self.messages[0])
-        print()
         len_messages = len(self.messages)
-        for i in range(1, len_messages, 2):
+        for i in range(0, len_messages, 2):
             print(i//2 + i%2)
             print(self.messages[i])
             try:  # just in case one message will be missed. shouldn't happen but just in case
@@ -292,14 +289,13 @@ class AssistantLLM():
     def print_messages_pair(self, n):
         # print pair assistant + user messages
         print(n)
-        if n == 0:
-            print(self.messages[0])
-        elif n > len(self.messages)//2:
-            print(f"The index \"{n}\" too high. Max index: {len(self.messages)//2}")
+        i_max = len(self.messages)//2 - 1
+        if n > i_max:
+            print(f"The index \"{n}\" too high. Max index: {i_max}")
         else:
-            print(self.messages[n*2 - 1])
+            print(self.messages[n*2])
             try:
-                print(self.messages[n*2])
+                print(self.messages[n*2 + 1])
             except Exception as e:
                 print("Error in print_messages_pair():", e)
 
@@ -777,15 +773,7 @@ if __name__ == "__main__":
             ta.add_user_message()  # add user message to the list
         # prompt = ta.process_input()
 
-# update data
-        ta.set_url      # initialise url
-        ta.set_header() # initialise header
         ta.set_data()   # initialise data
-        # print("ta.messages\n", ta.messages, "\n")                   # for debugging
-        # stream = requests.post(ta.url, data=json.dumps(ta.data), headers=ta.header, stream=False)
-        # print("stream.status_code:", stream.status_code, "\n")      # for debugging
-        # print("stream.request.body\n", stream.request.body, "\n")   # for debugging
-        # print("stream.text\n", stream.text, "\n")                   # for debugging
 
 
         # print llm answer header
@@ -801,7 +789,6 @@ if __name__ == "__main__":
         
             # here we communicate to API
             stream = requests.post(ta.url, data=json.dumps(ta.data), headers=ta.header, stream=True)
-            # stream = requests.post(ta.url, data=json.dumps(ta.data), headers=ta.header, stream=False)
 
             # stop spinner after receiving answer from ollama or ChatGPT 
             stop_event.set()
@@ -851,6 +838,3 @@ if __name__ == "__main__":
         #         sys.stdout.write(chunk.choices[0].delta.content)
         #         sys.stdout.flush()
         # print()
-
-
-#-----
