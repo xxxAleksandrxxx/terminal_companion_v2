@@ -99,7 +99,7 @@ class AssistantLLM():
         self.assistant_response = None
         self.messages = None
         self.pronunciation = False
-        
+
         self.set_server(server)
         self.set_servers_by_models()
         self.set_model(list(self.models[self.server])[0])  # use first model from models according to server
@@ -211,8 +211,6 @@ class AssistantLLM():
                 "temperature": self.temperature,
                 "max_tokens": self.max_tokens,
                 "stream": True,
-                # "messages": self.messages
-                # "messages": [{'role': 'system', 'content': self.role}]
                 "messages": [{'role': 'system', 'content': self.role}] + self.messages
             },
             "openai": {
@@ -220,7 +218,6 @@ class AssistantLLM():
                 "temperature": self.temperature,
                 "max_tokens": self.max_tokens,
                 "stream": True,
-                # "messages": self.messages
                 "messages": [{'role': 'system', 'content': self.role}] + self.messages
             },
             "anthropic": {
@@ -728,19 +725,20 @@ class AssistantLLM():
                         print(chunk_text, end="", flush=True)
                         response.append(chunk_text)
 
-        elif self.set_server == "anthropic":
+        elif self.server == "anthropic":
             for chunk in stream.iter_lines():
+                if chunk:
+                    decoded_chunk = chunk.decode('utf-8')
+                    if decoded_chunk.startswith('data'):
+                        chunk_data = json.loads(decoded_chunk[6:])
+                        if chunk_data['type'] == 'content_block_delta':
+                            chunk_text = chunk_data['delta']['text']
+                            print(chunk_text, end="", flush=True)
+                            response.append(chunk_text)
 
-                chunk_text = chunk.choices[0].delta.content
-                if chunk_text:
-                    response.append(chunk_text)
-                    print(chunk_text, end="", flush=True)
-            print()
-            response = "".join(response)
-            ta.assistant_response = response
-        # except Exception as e:
-        #     print("Error in print_stream():", e)
-
+        print()
+        response = "".join(response)
+        ta.assistant_response = response
 
 
 def display_spinner(event, spaces_n):
@@ -809,10 +807,10 @@ if __name__ == "__main__":
             stop_event.set()
             spinner_thread.join()
 
-###
+###         simple text
             if stream.status_code == 200:
-                # print(stream.text)
                 ta.print_stream(stream)  # print response from the API
+
             else:
                 print(json.dumps(json.loads(stream.text), indent=4))
                     # #### print and say or just print the response
