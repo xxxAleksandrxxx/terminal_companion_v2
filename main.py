@@ -173,18 +173,9 @@ class AssistantLLM():
         """
         Setup system message
         """
- ###    # ollama and open ai needs firs message to be a role
-        # anthropic needs to have system in data as a separate key.
-        # Keep it for later
-        
-        # used before to setup system message first but anthropic have different behaviour
-        # so now just setup empty one.
-        # self.messages=[
-        #     {
-        #         'role': 'system',
-        #         'content': self.role
-        #     }
-        # ]
+ ###    # ollama needs firs message to be a role - setup in set_data()
+        # openai needs firs message to be a role - setup in set_data()
+        # anthropic needs to have system in data as a separate key - setup in set_data()
         self.messages=[]
 
 ####
@@ -239,7 +230,41 @@ class AssistantLLM():
                 'content': self.user_prompt
             }
         )
+    
+### dont need probably...
+    def add_assistant_message(self):
+        self.messages.append(
+            {
+                'role': 'assistant',
+                'content': self.assistant_response
+            }
+        )
 
+
+    def del_messages_pair(self, n):
+        # print pair assistant + user messages
+        if self.messages:
+            print("No messages")
+            return
+        print(n)
+        i_max = len(self.messages)//2 - 1
+        # if n < 0:
+        #     print("It's not possible to delete system prompt. Here it is for your reference:")
+        #     print(self.messages[0])
+        #     return False
+        if n > i_max:
+            print(f"The index \"{n}\" is too high. Max index: {i_max}")
+            return False
+        else:
+            del self.messages[n*2]
+            try:
+                del self.messages[n*2]  # as after first delete the length of the messages decreased
+                return True
+            except Exception as e:
+                print("Error from del_messages_pair():", e)
+                return False
+            # finally:
+            #     return True
 
 
     def print_settings(self):
@@ -274,6 +299,9 @@ class AssistantLLM():
 
 
     def print_messages(self):
+        if not self.messages:
+            print("No messages")
+            return
         len_messages = len(self.messages)
         for i in range(0, len_messages, 2):
             print(i//2 + i%2)
@@ -288,7 +316,9 @@ class AssistantLLM():
 
     def print_messages_pair(self, n):
         # print pair assistant + user messages
-        print(n)
+        if not self.messages:
+            print("No messages")
+            return
         i_max = len(self.messages)//2 - 1
         if n > i_max:
             print(f"The index \"{n}\" too high. Max index: {i_max}")
@@ -374,38 +404,11 @@ class AssistantLLM():
         print("\nDelete selected pair of user input and model respond")
         for elem in ("del <number>", "del[<number>]"):
             print(elem)
+        print("\nDelete the last pair of user input and model respond")
+        for elem in ("del -1",):
+            print(elem)
                 
-
-    def del_messages_pair(self, n):
-        # print pair assistant + user messages
-        print(n)
-        len_messages_half = len(self.messages)//2
-        if n == 0:
-            print("It's not possible to delete system prompt. Here it is for your reference:")
-            print(self.messages[0])
-            return False
-        elif n > len_messages_half:
-            print(f"The index \"{n}\" is too high. Max index: {len_messages_half}")
-            return False
-        else:
-            del self.messages[n*2 - 1]
-            try:
-                del self.messages[n*2 - 1]  # as after first delete the length of the messages decreased
-            except Exception as e:
-                print("Error from del_messages_pair():", e)
-            finally:
-                return True
-
-
-    def add_assistant_message(self):
-        self.messages.append(
-            {
-                'role': 'assistant',
-                'content': self.assistant_response
-            }
-        )
     
-
     def input_multi(self):
         """
         Handle multiline input using simple input() and combining together.
@@ -487,13 +490,13 @@ class AssistantLLM():
                     # <server> <model> <role> <conversation> <user prompt> - the longest
                 # pass
                 
-                # CLEAR chat history - del all dicts from messages but system
+                # DELETE chat history - del all dicts from messages but system. Same as "del all"
                 # elif text.lower() in ["clear", "-clear", "/clear"]:
                 elif text_list in (["clear"], ["-clear"], ["/clear"]):
                     self.set_messages()
                     print("\nMessage history cleared")
                     # print(self.messages)
-                    self.print_messages()
+                    # self.print_messages()
                     continue
 
                 # SET conversation mod On or Off
@@ -542,31 +545,34 @@ class AssistantLLM():
                         print("\nWrong command:", text)
                     continue
 
-                # DELETE last user prompt and model answer
-                # elif text in ["del"]:
-
-### double-check for new type of handling the messages.
-                elif text_list in (["del"],):
-                    if len(self.messages) <= 2:
-                        print("It's empty already")
-                        print("Current messages:")
-                        self.print_messages()
+                # DELETE last user prompt and last model answer
+                # elif text == "del -1":
+                elif text_list in (["del", "-1"],):
+                    if len(self.messages) <= 0:
+                        print("No messages")
+                        # print("Current messages:")
+                        # self.print_messages()
                         continue
                     else:
                         self.messages = self.messages[:-2]
                         print("\nLast message and response have been deleted")
-                        print("Current messages:")
-                        self.print_messages()
+                        if len(self.messages) > 0:
+                            print("Current messages:")
+                            self.print_messages()
+                        else:
+                            print("No messages")
                         continue
+                
+                # DELETE all messages - same as "clear"
+                elif text_list in (["del", "all"],):
+                    self.set_messages()
+                    print("\nMessage history cleared")
+                    continue
 
                 # DELETE selected pair of user prompt and model answer
-                # elif text.startswith("del [") or text.startswith("del["):
-                # elif text.startswith("del") and text_len>3:
                 elif text.startswith("del ") or text.startswith("del["):
                     # for pattern like: "del 123" or "del[123]"
                     if text[4].isdigit():
-                        # i = text[4:]
-                        # i = [ch for ch in i if ch.isdigit()]
                         i = 0
                         for ch in text[4:]:
                             if ch.isdigit():
@@ -574,15 +580,18 @@ class AssistantLLM():
                             else:
                                 break
                         index = int(text[4:4+i])
-                        # print(f"message[{index}]:")
-                        # print(self.messages[index])
-                        # self.print_messages_pair(index)
                         if self.del_messages_pair(index) is True:
                             print(f"\nMessage pair {index} have been deleted")
                             print("Current messages:")
                             self.print_messages()
+                            continue
                     else:
                         print("\nWrong command:", text)
+                    continue
+                
+                # TURN OFF simple "del" command 
+                elif text == "del":
+                    print("\nWrong command:", text)
                     continue
 
                 # SET server, openai, anthropic or ollama
@@ -701,8 +710,8 @@ class AssistantLLM():
                 if chunk_text:
                     response.append(chunk_text)
                     print(chunk_text, end="", flush=True)
-                else:
-                    response.append("<nothing>")
+                # else:
+                #     response.append("<nothing>")
             print()
             response = "".join(response)
             ta.assistant_response = response
