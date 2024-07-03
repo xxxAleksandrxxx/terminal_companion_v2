@@ -182,9 +182,9 @@ class AssistantLLM():
 ####
     def set_url(self):
         """Setup url according to chosen server"""
-        print("you are going to change URL!")
+        print("You are going to change URL!")
         self.url = self.urls[self.server]
-        print("URL changed. New URL:", self.url)
+        print("URL changed.\nNew URL:", self.url)
 
 
     def set_header(self):
