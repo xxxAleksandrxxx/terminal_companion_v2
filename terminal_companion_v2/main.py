@@ -109,8 +109,8 @@ class AssistantLLM():
         self.set_url()
         self.set_header()
         # self.set_data()
-        print("____________________________", end="")
-        self.print_settings()
+        # print("____________________________", end="")
+        # self.print_settings()
 
 
     def set_server(self, server):
@@ -182,9 +182,9 @@ class AssistantLLM():
 ####
     def set_url(self):
         """Setup url according to chosen server"""
-        print("You are going to change URL!")
+        # print("You are going to change URL!")
         self.url = self.urls[self.server]
-        print("URL changed.\nNew URL:", self.url)
+        # print("URL changed.\nNew URL:", self.url)
 
 
     def set_header(self):
@@ -243,10 +243,9 @@ class AssistantLLM():
 
     def del_messages_pair(self, n):
         # print pair assistant + user messages
-        if self.messages:
+        if not self.messages:
             print("No messages")
             return
-        print(n)
         i_max = len(self.messages)//2 - 1
         # if n < 0:
         #     print("It's not possible to delete system prompt. Here it is for your reference:")
@@ -570,7 +569,7 @@ class AssistantLLM():
                     continue
 
                 # DELETE selected pair of user prompt and model answer
-                elif text.startswith("del ") or text.startswith("del["):
+                elif (text.startswith("del ") or text.startswith("del[")) and text_len > 4:
                     # for pattern like: "del 123" or "del[123]"
                     if text[4].isdigit():
                         i = 0
@@ -589,8 +588,8 @@ class AssistantLLM():
                         print("\nWrong command:", text)
                     continue
                 
-                # TURN OFF simple "del" command 
-                elif text == "del":
+                # TURN OFF simple "del" "del " commands
+                elif text in ("del", "del "):
                     print("\nWrong command:", text)
                     continue
 
@@ -695,7 +694,7 @@ class AssistantLLM():
     #             sys.stdout.flush()
     #     print()
     #     response = "".join(response)
-    #     ta.assistant_response = response
+    #     self.assistant_response = response
 
 
     # Depending on server, there would be different end-points to extract the content from the response
@@ -714,7 +713,7 @@ class AssistantLLM():
                 #     response.append("<nothing>")
             print()
             response = "".join(response)
-            ta.assistant_response = response
+            self.assistant_response = response
 
         elif self.server == "openai":
             for chunk in stream.iter_lines():
@@ -743,7 +742,7 @@ class AssistantLLM():
 
         print()
         response = "".join(response)
-        ta.assistant_response = response
+        self.assistant_response = response
 
 
 def display_spinner(event, spaces_n):
@@ -823,7 +822,7 @@ if __name__ == "__main__":
             #         print(chunk.choices[0].delta.content, end="", flush=True)
             # print()
             # response = "".join(response)
-            # ta.assistant_response = response
+            # self.assistant_response = response
 
 
 
