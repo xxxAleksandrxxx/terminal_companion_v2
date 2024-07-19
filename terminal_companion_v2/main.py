@@ -48,6 +48,7 @@ class AssistantLLM():
                 "llama3": "llama3"       # free of charge ^_^
             },
             "openai": {                               # https://platform.openai.com/docs/models
+                "gpt4om": "gpt-4o-mini",              # input  0.15 USD, output  0.60 USD per 1M tokens
                 "gpt3": "gpt-3.5-turbo",              # input  0.50 USD, output  1.50 USD per 1M tokens
                 "gpt4o": "gpt-4o",                    # input  5.00 USD, output 15.00 USD per 1M tokens
                 "gpt4": "gpt-4-turbo",                # input 10.00 USD, output 30.00 USD per 1M tokens
