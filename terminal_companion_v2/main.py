@@ -438,16 +438,11 @@ class AssistantLLM():
                 text_list = text.lower().split(" ")
                 
                 # EXIT
-                # if text_list in ("q", "quit", "exit", "stop", "-q", "-quit", "-exit", "-stop", "/q", "/quit", "/exit", "/stop"):
-                # if text.lower() in ("q", "quit", "exit", "stop", "-q", "-quit", "-exit", "-stop", "/q", "/quit", "/exit", "/stop"):
-                # if text.lower() in ["q", "quit", "exit", "stop", "-q", "-quit", "-exit", "-stop", "/q", "/quit", "/exit", "/stop"]:
                 if text_list in (["q"], ["quit"], ["exit"], ["stop"], ["-q"], ["-quit"], ["-exit"], ["-stop"], ["/q"], ["/quit"], ["/exit"], ["/stop"]):
-                # if text_list in (("q"), ("quit"), ("exit"), ("stop"), ("-q"), ("-quit"), ("-exit"), ("-stop"), ("/q"), ("/quit"), ("/exit"), ("/stop")):
                     print("buy!")
                     sys.exit()
                 
                 # PRINT help
-                # if text.lower() in ["h", "help", "-h", "-help", "/h", "/help"]:
                 if text_list in (["h"], ["help"], ["-h"], ["-help"], ["/h"], ["/help"]):
                     # call help printout
                     print("\nHelp text will be there")
@@ -472,7 +467,6 @@ class AssistantLLM():
                     continue
 
                 # PRINT current settings
-                # elif text.lower() in ["?", "", "status", "/?", "/status", "-?", "-status"]:
                 elif text_list in (["?"], [""], ["status"], ["/?"], ["/status"], ["-?"], ["-status"]):
                     # print("Current status")
                     self.print_settings()
@@ -491,7 +485,6 @@ class AssistantLLM():
                 # pass
                 
                 # DELETE chat history - del all dicts from messages but system. Same as "del all"
-                # elif text.lower() in ["clear", "-clear", "/clear"]:
                 elif text_list in (["clear"], ["-clear"], ["/clear"]):
                     self.set_messages()
                     print("\nMessage history cleared")
@@ -500,7 +493,6 @@ class AssistantLLM():
                     continue
 
                 # SET conversation mod On or Off
-                # elif text in ["c+", "/c+"]:
                 elif text_list in (["c+"], ["/c+"]):
                     self.conversation = True
                     self.print_conversation_updated()
@@ -523,7 +515,6 @@ class AssistantLLM():
                     continue
 
                 # PRINT messages list of dictionaries 
-                # elif text.lower() in ["print"]:
                 elif text_list in (["print"], ["/print"]):
                     # print("\n", self.messages, sep="")
                     self.print_messages()
@@ -710,8 +701,6 @@ class AssistantLLM():
                 if chunk_text:
                     response.append(chunk_text)
                     print(chunk_text, end="", flush=True)
-                # else:
-                #     response.append("<nothing>")
             print()
             response = "".join(response)
             self.assistant_response = response
@@ -768,10 +757,6 @@ if __name__ == "__main__":
     ta = AssistantLLM()
     while True:
         ta.process_input()
-
-        # # as it's possible to delete even system message, check that system message is exist and create it if needed
-        # if len(ta.messages) == 0 or ta.messages[0]["role"] != "system":  # probably don't need to check this ta.messages[0]["role"] != "system" as there is no way to have first message different from system.
-
 ### probably need to delete this and the relative method set_messages()    
         if len(ta.messages) == 0:
             ta.set_messages()
@@ -824,8 +809,6 @@ if __name__ == "__main__":
             # print()
             # response = "".join(response)
             # self.assistant_response = response
-
-
 
             ta.add_assistant_message()
 
