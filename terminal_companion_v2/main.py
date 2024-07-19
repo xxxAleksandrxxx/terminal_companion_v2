@@ -45,7 +45,7 @@ class AssistantLLM():
 
         self.models = {
             "ollama": {
-                "llama3": "llama3"       # free of charge ^_^
+                "llama3": "llama3"                    # free of charge ^_^
             },
             "openai": {                               # https://platform.openai.com/docs/models
                 "gpt4om": "gpt-4o-mini",              # input  0.15 USD, output  0.60 USD per 1M tokens
