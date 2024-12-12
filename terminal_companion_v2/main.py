@@ -1,4 +1,5 @@
-# replace openai library with requests library to communicate to openai, anthropic, ollama - openai lib supports ollama api but doesn't support anthropic api
+# replace openai library with requests library to communicate to openai, anthropic, ollama
+# openai lib supports ollama api but doesn't support anthropic api
 
 import requests   # to communicate to APIs
 import os         # to use api key stored in environment variable
@@ -54,14 +55,15 @@ class AssistantLLM():
                 "gpt4": "gpt-4-turbo",                # input 10.00 USD, output 30.00 USD per 1M tokens
             },
             "anthropic": {                            # https://www.anthropic.com/pricing#anthropic-api
-                "ha3": "claude-3-haiku-20240307",     # input  0.25 USD, output  1.25 USD per 1M tokens                
-                "sn35": "claude-3-5-sonnet-20240620", # input  3.00 USD, output 15.00 USD per 1M tokens
-                "op3": "claude-3-opus-20240229"       # input 15.00 USD, output 75.00 USD per 1M tokens
+                "ha3": "claude-3-5-haiku-20241022",     # input  0.25 USD, output  1.25 USD per 1M tokens   # claude-3-haiku-20240307
+                "sn35": "claude-3-5-sonnet-20241022", # input  3.00 USD, output 15.00 USD per 1M tokens     # claude-3-5-sonnet-20240620
+                "op3": "claude-3-opus-20240229"       # input 15.00 USD, output 75.00 USD per 1M tokens     # claude-3-opus-20240229
             }
         }
 
         self.roles = {
             "none": "",
+            "anki": "I want you to help me with building my personal german - english dictionary. With next messages I'll give you words and your task to answer with both german and english translation using appropriate articles or infinitive and present simple conjugations. add very simple example of usage this word and it's translation. example should help to guess the meaning of the given word. example should suits for A1 level leraners. answer ok, if you got it\n\nexamples:\n\nuser: bread\nassistant: das Brot\nIch esse morgens Brot mit Butter.\n\nbread\nI eat bread with butter in the morning.\n\nuser: tisch\nassistant: der Tisch\nDer Tisch ist in der Küche.\n\ntable\nThe table is in the kitchen.\n\nuser: see\nassistant: sehen\nIch sehe dein Lächeln!\n\nto see\nI see your smile!\n\nich sehe\nIch sehe dein Lächeln!\n\nI see\nI see your smile!\n\ndu siehst\nDu siehst das schöne Bild.\n\nyou see\nYou see the beautiful picture\n\ner/sie/es sieht\nEr sieht die Wahrheit.\n\nhe/she/it sees\nHe sees the truth.\n\nwir sehen\nWir sehen den blauen Himmel.\n\nwe see\nWe see the blue sky.\n\nihr seht\nIhr seht den Baum.\n\nyou (plural) see\nYou see the tree.\n\nsie sehen\nSie sehen den Gott.\n\nthey see\nThey see the God.",
             "coder": '###INSTRUCTIONS###\n\nYou MUST follow the instructions for answering:\n\n- ALWAYS answer in the language of my message.\n- Read the entire convo history line by line before answering.\n- I have no fingers and the placeholders trauma. Return the entire code template for an answer when needed. NEVER use placeholders.\n- If you encounter a character limit, DO an ABRUPT stop, and I will send a "continue" as a new message.\n- You ALWAYS will be PENALIZED for wrong and low-effort answers. \n- ALWAYS follow "Answering rules."\n\n###Answering Rules###\n\nFollow in the strict order:\n\n1. USE the language of my message.\n2. **ONCE PER CHAT** assign a real-world expert role to yourself before answering, e.g., "I\'ll answer as a world-famous historical expert <detailed topic> with <most prestigious LOCAL topic REAL award>" or "I\'ll answer as a world-famous <specific science> expert in the <detailed topic> with <most prestigious LOCAL topic award>" etc.\n3. You MUST combine your deep knowledge&nbsp;of the topic and&nbsp;clear thinking to quickly and accurately decipher the answer step-by-step with CONCRETE details.\n4. I\'m going to tip $1,000,000 for the best reply.&nbsp;\n5. Your answer&nbsp;is critical for my career.\n6. Answer the question in a natural, human-like manner.\n7. ALWAYS use an answering example for a first message structure.\n\n##Answering in English example##\n\nI\'ll answer as the world-famous <specific field> scientists with <most prestigious LOCAL award>\n\n<Deep knowledge step-by-step answer, with CONCRETE details>'
         }
 ### how to communicate to API
@@ -86,7 +88,7 @@ class AssistantLLM():
         self.server = server 
 #-      self.client = None   # it looks like we don't need it
 ###
-        self.temperature = 0.3
+        self.temperature = 0.7
         self.max_tokens = 1024
         self.header = None
         self.url = None
