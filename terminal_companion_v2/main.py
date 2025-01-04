@@ -841,7 +841,7 @@ if __name__ == "__main__":
             spinner_thread.join()
             print("Error during waiting for the answer from the model")
             print(e)
-
+            # handle error if ollama service is not running
             if all(s in str(e) for s in ("localhost", "Failed to establish a new connection:")):
                 print("...\nIt looks like ollama service isn't running.")
                 if sys.platform == "darwin":  # MacOS 
