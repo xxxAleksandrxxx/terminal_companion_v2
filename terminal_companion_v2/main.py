@@ -3,7 +3,7 @@
 
 import requests   # to communicate to APIs
 import os         # to use api key stored in environment variable
-import sys        # to printout chunk by chink in terminal
+import sys        # to printout chunk by chink in terminal and check current platform: MacOS, Windows, Linux
 import readline   # for right and left keys movements across the input and for input history feature 
 import json       # to transfer to json compatible format with less pain
 import time       # to handle spinner
@@ -430,6 +430,26 @@ class AssistantLLM():
         return text
 
 
+    def stop_ollama(self):
+        """
+        Check if ollama is in the PC memory and unload it if yes
+        """
+        # stream = os.popen('ollama ps')
+        stream = os.popen('ollama ps 2>/dev/null')  # redirect error if ollama service is not running to dev/nulls
+        output = stream.read()
+        lines = output.strip().split('\n')
+        # Check if there's at least one line after the header
+        if len(lines) > 1:
+            # Split the second line (first line after header) by whitespace
+            parts = lines[1].split()
+            # The model name is the first part
+            model_name = parts[0]
+            # print(f"Ollama model used and stopped: {model_name}")
+            os.system(f"ollama stop {model_name}")
+        # else:
+        #     print("Ollama was not in the PC memory")
+
+
     def process_input(self):
         while True:
             text = self.input_multi()
@@ -442,6 +462,8 @@ class AssistantLLM():
                 # EXIT
                 if text_list in (["q"], ["quit"], ["exit"], ["stop"], ["-q"], ["-quit"], ["-exit"], ["-stop"], ["/q"], ["/quit"], ["/exit"], ["/stop"]):
                     print("buy!")
+                    # check if ollama used and stop models if yes
+                    self.stop_ollama()
                     sys.exit()
                 
                 # PRINT help
@@ -819,6 +841,24 @@ if __name__ == "__main__":
             spinner_thread.join()
             print("Error during waiting for the answer from the model")
             print(e)
+
+            if all(s in str(e) for s in ("localhost", "Failed to establish a new connection:")):
+                print("...\nIt looks like ollama service isn't running.")
+                if sys.platform == "darwin":  # MacOS 
+                    print("Starting ollama service...")
+                    os.system("brew services start ollama")
+                    print("Try once more.")
+                elif sys.platform == "linux":  # Linux
+                    # extend functionality if needed
+                    print(f"Try to run ollama service manually or use any other API server from the list:\n- {"\n- ".join(ta.servers)}")
+                elif sys.platform == "win32":  # Windows
+                    # extend functionality if needed
+                    print(f"Try to run ollama service manually or use any other API server from the list:\n- {"\n- ".join(ta.servers)}")
+                else:  # Unknown platform
+                    # extend functionality if needed
+                    print("Current platform:", sys.platform)
+                    print(f"Try to run ollama service manually or use any other API server from the list:\n- {"\n- ".join(ta.servers)}")
+
         
         # stream = ta.client.chat.completions.create(
         #     messages=ta.messages,
