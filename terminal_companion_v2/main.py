@@ -336,7 +336,10 @@ class AssistantLLM():
         """
         Printout available model names
         """
-        print("Available models:")
+        text = "Available models:"
+        print(text)
+        # print("*"*len(text))
+        print("─"*len(text))
         for server in self.models:
             for short_name, full_name in self.models[server].items():
                 print(f"{short_name:<10} {full_name:<}")
@@ -346,7 +349,10 @@ class AssistantLLM():
         """
         Printout available server names
         """
-        print("Available servers:")
+        text = "Available servers:"
+        print(text)
+        # print("*"*len(text))
+        print("─"*len(text))
         for elem in self.servers:
             print(elem)
     
@@ -355,18 +361,24 @@ class AssistantLLM():
         """
         Printout available roles
         """
-        print("Available roles:")
+        text = "Available roles:"
+        print(text)
+        # print("*"*len(text))
+        print("─"*len(text))
         for short_name, full_prompt in self.roles.items():
             print(short_name)
-            print(full_prompt)
-            print()
+            # print(full_prompt)
+            # print()
 
 
     def print_help(self):
         """
         Printout help instruction
         """
-        print("Available commands:")
+        text = "Available commands:"
+        print(text)
+        # print("*"*len(text))
+        print("─"*len(text))
         print("\nPrintout help")
         for elem in (["h"], ["help"], ["-h"], ["-help"], ["/h"], ["/help"]):
             print(elem[0])
