@@ -48,16 +48,21 @@ class AssistantLLM():
             "ollama": {
                 "llama3": "llama3"                    # free of charge ^_^
             },
-            "openai": {                               # https://platform.openai.com/docs/models
-                "gpt4om": "gpt-4o-mini",              # input  0.15 USD, output  0.60 USD per 1M tokens
-                "gpt3": "gpt-3.5-turbo",              # input  0.50 USD, output  1.50 USD per 1M tokens
-                "gpt4o": "gpt-4o",                    # input  5.00 USD, output 15.00 USD per 1M tokens
-                "gpt4": "gpt-4-turbo",                # input 10.00 USD, output 30.00 USD per 1M tokens
+            "openai": {                                      # https://platform.openai.com/docs/pricing            https://platform.openai.com/docs/models
+                "gpt4om": "gpt-4o-mini",                     # input  0.15 USD, output  0.60 USD per 1M tokens
+                #"gpt40m-audio": "gpt-4o-mini-audio-preview"  # input  0.15 USD, output  0.60 USD per 1M tokens
+                "gpto3m": "o3-mini",                         # input  1.10 USD, output  4.40 USD per 1M tokens
+                "gpt3": "gpt-3.5-turbo",                     # input  0.50 USD, output  1.50 USD per 1M tokens
+                "gpt4o": "gpt-4o",                           # input  2.50 USD, output 10.00 USD per 1M tokens
+                "gpt4": "gpt-4-turbo",                       # input 10.00 USD, output 30.00 USD per 1M tokens
+                
             },
-            "anthropic": {                            # https://www.anthropic.com/pricing#anthropic-api
-                "ha3": "claude-3-5-haiku-20241022",     # input  0.25 USD, output  1.25 USD per 1M tokens   # claude-3-haiku-20240307
-                "sn35": "claude-3-5-sonnet-20241022", # input  3.00 USD, output 15.00 USD per 1M tokens     # claude-3-5-sonnet-20240620
-                "op3": "claude-3-opus-20240229"       # input 15.00 USD, output 75.00 USD per 1M tokens     # claude-3-opus-20240229
+            "anthropic": {                                   # https://www.anthropic.com/pricing#anthropic-api     https://docs.anthropic.com/en/docs/about-claude/models/all-models#model-comparison-table
+                "ha3": "claude-3-haiku-20240307",            # input  0.25 USD, output  1.25 USD per 1M tokens       # claude-3-haiku-20240307
+                "ha35": "claude-3-5-haiku-20241022",         # input  0.80 USD, output  4.00 USD per 1M tokens     # claude-3-5-haiku-20241022
+                "sn35": "claude-3-5-sonnet-20241022",        # input  3.00 USD, output 15.00 USD per 1M tokens     # claude-3-5-sonnet-20240620
+                "sn37": "claude-3-7-sonnet-20250219",        # input  3.00 USD, output 15.00 USD per 1M tokens     # claude-3-7-sonnet-20250219
+                "op3": "claude-3-opus-20240229"              # input 15.00 USD, output 75.00 USD per 1M tokens     # claude-3-opus-20240229
             }
         }
 
